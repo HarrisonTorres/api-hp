@@ -1,0 +1,17 @@
+{
+  "name": "api-hp",
+  "version": "1.0.0",
+  "description": "API para fazer um CRUD de personagens do HArry Poter",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index"
+  },
+  "author": "Harrison Torres",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
