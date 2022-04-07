@@ -4,7 +4,8 @@
   "description": "API para fazer um CRUD de personagens do HArry Poter",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index"
+    "start": "nodemon index",
+    "dev": "nodemon index"
   },
   "author": "Harrison Torres",
   "license": "ISC",
