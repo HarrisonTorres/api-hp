@@ -19,14 +19,37 @@ try{
 app.use(express.json())
 
 
-app.get('/', (req, res) => {
+app.get('/characters', async (req, res) => {
+    const characters = await Character.find()
+
+    if(characters.length === 0){
+        return res.status(400).send({message: "não existe personagem cadrastrado"})
+    }
+
     res.send(characters.filter(Boolean));
 });
+
+app.get("/character/:id", async (req, res) => {
+    const {id} = req.params;
+
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        res.status(400).send({message: "Id invalido"});
+        return;
+    }
+
+    const character = await Character.findById(id);
+
+    if(!character){
+        return res.status(404).send({message: "personagem não encontrado"})
+    }
+    
+    res.send(character)
+})
 
 app.post("/character", async (req, res) => {
     const {name, species, house, actor} = req.body
 
-    if(!nome || !species || !house || !actor){
+    if(!name || !species || !house || !actor){
         res.status(400).send({message: "Você não enviu todos os dados necessessario"})
         return;
     }
@@ -45,55 +68,51 @@ app.post("/character", async (req, res) => {
     })
 })
 
-app.get("/character/:id", (req, res) => {
-    const id = +req.params.id;
-    const character = characters.find((c) => c.id === id);
 
-    if (!character) {
-        res.status(404).send({
-            message: "Personagem não existe"
-        })
+
+app.put("/character/:id", async (req, res) => {
+    const {id} = req.params;
+
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        res.status(400).send({message: "Id invalido"});
         return;
     }
-    res.send(character)
+
+    const character = await Character.findById(id);
+
+    if(!character){
+        return res.status(404).send({message: "personagem não encontrado"})
+    }
+
+    const {name, species, house, actor} = req.body;
+
+    if(!name || !species || !house || !actor){
+        res.status(400).send({message: "Você não enviu todos os dados necessessario"})
+        return;
+    }
+
+    character.name = name;
+    character.house = house;
+    character.house = house;
+    character.actor = actor;
+
+    await character.save()
+
+    res.send({message: `Personagem salvo com sucesso ${character}`})
 })
 
-app.put("/character/:id", (req, res) => {
-    const id = +req.params.id;
-    const character = characters.find((c) => c.id === id);
+app.delete("/character/:id", async (req, res) => {
+    const {id} = req.params;
 
-    if (!character) {
-        res.status(404).send({
-            message: "Personagem não existe"
-        })
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        res.status(400).send({message: "Id invalido"});
         return;
     }
 
-    const {
-        name,
-        actor
-    } = req.body
+    const character = await Character.findById(id)
 
-    character.name = name
-    character.actor = actor
-
-    res.send(character)
-})
-
-app.delete("/character/:id", (req, res) => {
-    const id = +req.params.id;
-    const character = characters.find((c) => c.id === id);
-
-    if (!character) {
-        res.status(404).send({
-            message: "Personagem não existe"
-        })
-        return;
-    }
-
-    const indexCharacter = characters.indexOf(character);
-    delete characters[indexCharacter];
-
+    await character.remove()
+    
     res.send({
         message: "personagem apagado com sucesso"
     })

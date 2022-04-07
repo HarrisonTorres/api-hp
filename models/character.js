@@ -5,7 +5,7 @@ const characterSchema = new mongoose.Schema({
         type: String,
         require: true
     },
-    spacies: {
+    species: {
         type: String,
         require: true
     },
