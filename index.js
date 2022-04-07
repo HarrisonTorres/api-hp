@@ -1,12 +1,15 @@
+require("dotenv").config()
+
 const express = require('express')
 const app = express()
 const mongoose = require("mongoose")
 const Character = require("./models/character")
 
+const port = 3000 || process.env.PORT;
 
 try{
     mongoose.connect(
-        "mongodb+srv://root:admin123@cluster0.8tnr9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+        process.env.DATABASE_URI,
     {
         useNewUrlParser: true, 
         useUnifiedTopology: true,
@@ -112,12 +115,16 @@ app.delete("/character/:id", async (req, res) => {
     const character = await Character.findById(id)
 
     await character.remove()
-    
+
+    if (!character){
+        return res.status(404).send({ message: "Esse personagem não existe"})
+    }
+
     res.send({
         message: "personagem apagado com sucesso"
     })
 })
 
-app.listen(3000, () => {
-    console.log("Servidor Rodando http://localhost:3000")
+app.listen(port, () => {
+    console.log(`Servidor Rodando http://localhost:3000 ${port}`)
 })
